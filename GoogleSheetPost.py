@@ -1,6 +1,11 @@
 import os
 import gspread
+import requests
 from google.oauth2 import service_account
+import certifi
+
+# Manually set the SSL certificates for requests
+os.environ['REQUESTS_CA_BUNDLE'] = certifi.where()
 
 # Replace 'path/to/your/credentials.json' with the actual path to your credentials file.
 credentials = service_account.Credentials.from_service_account_file('C:/Users/kmitsios/Downloads/credentials.json')
