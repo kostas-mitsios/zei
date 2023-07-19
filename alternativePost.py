@@ -30,7 +30,7 @@ if named_range:
 
     # Calculate the range of the named range
     #sheet_id = named_ranges['sheets'][0]['properties']['sheetId']
-    sheet_name = 'Sheet1'
+    sheet_name = 'Dogs'
     named_range_range = f"{sheet_name}!A{start_row_index+1}:C{new_end_row_index}"
     print(named_range_range)
 
