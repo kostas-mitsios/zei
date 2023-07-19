@@ -3,7 +3,7 @@ import gspread
 from google.oauth2 import service_account
 
 # Replace 'path/to/your/credentials.json' with the actual path to your credentials file.
-credentials = service_account.Credentials.from_service_account_file('path/to/your/credentials.json')
+credentials = service_account.Credentials.from_service_account_file('C:/Users/katikako/Downloads/credentials.json')
 client = gspread.authorize(credentials)
 
 # Replace '1sm_ePXHiTxty5gHfgW_rWGhzdnml1G6sVfuwKfKWeMM' with your actual Google Sheet ID.
