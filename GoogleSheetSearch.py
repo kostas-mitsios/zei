@@ -2,11 +2,11 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import requests
 
-# Replace with your own credentials file path
+#credentials
 credentials_file = 'C:/Users/kmitsios/Downloads/credentials.json'
 api_key = 'AIzaSyDowT_pE8qSIUtJrTa7AsBWj6X2wR8migw'
 
-# Create a custom session with the API key
+#create session
 session = requests.Session()
 session.headers.update({'Authorization': f'Bearer {api_key}'})
 
