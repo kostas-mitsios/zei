@@ -3,6 +3,24 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkcalendar import DateEntry  # Requires 'tkcalendar' package to be installed
 from datetime import datetime
+import gspread
+from google.oauth2 import service_account
+
+def openSelectedSheet(sheetName):
+    # Define your credentials file path
+    credentials_file = 'credentials.json'
+
+    # Authenticate with Google Sheets API
+    scope = ["https://www.googleapis.com/auth/spreadsheets"]
+    credentials = service_account.Credentials.from_service_account_file(credentials_file, scopes=scope)
+    client = gspread.Client(auth=credentials)
+
+    # Open the Google Sheet by its ID
+    sheet_id = "1sm_ePXHiTxty5gHfgW_rWGhzdnml1G6sVfuwKfKWeMM"
+    sheet = client.open_by_key(sheet_id)
+
+    # Select the "Dogs" sheet by its title
+    worksheet = sheet.worksheet(sheetName)
 
 def calculate_day(event=None):
     selected_date = shift_date_entry.get_date()
@@ -16,7 +34,13 @@ def on_shift_submit():
     name = name_entry.get()
     shift = shift_var.get()
     date = shift_date_entry.get()
-    day = date.strftime('%A') if date else ""
+    if date:
+        date = datetime.strptime(date, "%d/%m/%Y")
+        day = date.strftime("%A")
+    else:
+        day = ""
+    date = str(date.strftime("%d/%m/%Y"))
+    #day = date.strftime('%A') if date else ""
     day_var.set(day)
     usual_shift = usual_shift_combobox.get()
 
@@ -26,6 +50,28 @@ def on_shift_submit():
 
     # Close the shift input window
     shift_window.destroy()
+
+    #openSelectedSheet("Shifts")
+    data_to_write = [
+    [name, date, day, shift, usual_shift]
+    ]
+
+    # Define your credentials file path
+    credentials_file = 'credentials.json'
+
+    # Authenticate with Google Sheets API
+    scope = ["https://www.googleapis.com/auth/spreadsheets"]
+    credentials = service_account.Credentials.from_service_account_file(credentials_file, scopes=scope)
+    client = gspread.Client(auth=credentials)
+
+    # Open the Google Sheet by its ID
+    sheet_id = "1sm_ePXHiTxty5gHfgW_rWGhzdnml1G6sVfuwKfKWeMM"
+    sheet = client.open_by_key(sheet_id)
+
+    # Select the "Dogs" sheet by its title
+    worksheet = sheet.worksheet("Shifts")
+    next_empty_row = len(worksheet.col_values(1)) + 1
+    worksheet.insert_rows(data_to_write, next_empty_row)  # You can specify the row number where data should be inserted
 
 
 def on_volunteer_submit():
@@ -44,19 +90,60 @@ def on_volunteer_submit():
 
     # Close the volunteer input window
     volunteer_input_window.destroy()
+    
+    data_to_write = [
+    [name, date_started, date_stopped, shift_day, shift_time, tourist]
+    ]
 
+    # Define your credentials file path
+    credentials_file = 'credentials.json'
+
+    # Authenticate with Google Sheets API
+    scope = ["https://www.googleapis.com/auth/spreadsheets"]
+    credentials = service_account.Credentials.from_service_account_file(credentials_file, scopes=scope)
+    client = gspread.Client(auth=credentials)
+
+    # Open the Google Sheet by its ID
+    sheet_id = "1sm_ePXHiTxty5gHfgW_rWGhzdnml1G6sVfuwKfKWeMM"
+    sheet = client.open_by_key(sheet_id)
+
+    # Select the "Dogs" sheet by its title
+    worksheet = sheet.worksheet("Volunteers")
+    next_empty_row = len(worksheet.col_values(1)) + 1
+    worksheet.insert_rows(data_to_write, next_empty_row)  # You can specify the row number where data should be inserted
 
 def on_medicine_submit():
     global medicine_name_entry
 
-    name = medicine_name_entry.get()
+    medicationName = medicine_name_entry.get()
 
     # Perform any validation or data processing here
     # For simplicity, we will just display the entered data
-    messagebox.showinfo("Medicine Data Entered", f"Name: {name}")
+    messagebox.showinfo("Medicine Data Entered", f"Name: {medicationName}")
 
     # Close the medicine input window
     medicine_input_window.destroy()
+
+    data_to_write = [
+    [medicationName]
+    ]
+
+    # Define your credentials file path
+    credentials_file = 'credentials.json'
+
+    # Authenticate with Google Sheets API
+    scope = ["https://www.googleapis.com/auth/spreadsheets"]
+    credentials = service_account.Credentials.from_service_account_file(credentials_file, scopes=scope)
+    client = gspread.Client(auth=credentials)
+
+    # Open the Google Sheet by its ID
+    sheet_id = "1sm_ePXHiTxty5gHfgW_rWGhzdnml1G6sVfuwKfKWeMM"
+    sheet = client.open_by_key(sheet_id)
+
+    # Select the "Medications" sheet by its title
+    worksheet = sheet.worksheet("Medications")
+    next_empty_row = len(worksheet.col_values(1)) + 1
+    worksheet.insert_rows(data_to_write, next_empty_row)  # You can specify the row number where data should be inserted
 
 def on_dog_submit():
     global dog_name_entry, arrival_date_entry, currently_fostered_var, times_fostered_entry
@@ -90,6 +177,7 @@ def on_currently_fostered_change():
 
 def show_dog_input_box():
     global dog_name_entry, arrival_date_entry, currently_fostered_var, times_fostered_entry, dog_input_window
+    global years_spinbox, months_spinbox
 
     # Create a new window for the dog input box
     dog_input_window = tk.Toplevel(root)
@@ -125,23 +213,35 @@ def show_dog_input_box():
     fostered_no_radio = ttk.Radiobutton(input_frame, text="No", variable=currently_fostered_var, value="No", command=on_currently_fostered_change)
     fostered_no_radio.grid(row=2, column=2, padx=5)
 
+    # Years and Months Spinboxes
+    years_label = ttk.Label(input_frame, text="Years:")
+    years_label.grid(row=3, column=0, sticky="w")
+    years_spinbox = ttk.Spinbox(input_frame, from_=0, to=20)
+    years_spinbox.grid(row=3, column=1, padx=10, pady=5)
+
+    months_label = ttk.Label(input_frame, text="Months:")
+    months_label.grid(row=4, column=0, sticky="w")
+    months_spinbox = ttk.Spinbox(input_frame, from_=0, to=12)
+    months_spinbox.grid(row=4, column=1, padx=10, pady=5)
+
     # Times Fostered Entry
     global times_fostered_entry
     times_fostered_label = ttk.Label(input_frame, text="Times Fostered:")
-    times_fostered_label.grid(row=3, column=0, sticky="w")
+    times_fostered_label.grid(row=5, column=0, sticky="w")
     times_fostered_entry = ttk.Entry(input_frame, width=5, state="readonly")
-    times_fostered_entry.grid(row=3, column=1, padx=10, pady=5)
+    times_fostered_entry.grid(row=5, column=1, padx=10, pady=5)
 
     # Submit button
     submit_button = ttk.Button(input_frame, text="Submit", command=on_dog_submit)
-    submit_button.grid(row=4, column=0, columnspan=2, pady=10)
+    submit_button.grid(row=6, column=0, columnspan=2, pady=10)
 
     # Return button
     return_button = ttk.Button(input_frame, text="Return", command=dog_input_window.destroy)
-    return_button.grid(row=4, column=2, pady=10)
+    return_button.grid(row=6, column=2, pady=10)
 
     # Adjust row and column weights to make the input fields expandable
     input_frame.columnconfigure((1, 2), weight=1)
+
 
 def add_shift():
     global name_entry, shift_var, shift_date_entry, day_var, usual_shift_combobox, shift_window
@@ -256,7 +356,7 @@ def add_volunteer():
     date_stopped_entry.grid(row=2, column=1, padx=10, pady=5)
 
     # Usual Shift Day Combobox
-    shift_day_combobox = ttk.Combobox(input_frame, values=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
+    shift_day_combobox = ttk.Combobox(input_frame, values=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], state="readonly")
     shift_day_combobox.grid(row=3, column=1, padx=10, pady=5)
 
     # Usual Shift Time Radioboxes
@@ -367,7 +467,7 @@ def add_shift():
 
     # Usual Shift Dropdown
     usual_shift_var = tk.StringVar()
-    usual_shift_combobox = ttk.Combobox(shift_frame, textvariable=usual_shift_var, values=["Yes", "No", "Tourist"])
+    usual_shift_combobox = ttk.Combobox(shift_frame, textvariable=usual_shift_var, values=["Yes", "No", "Tourist"], state="readonly")
     usual_shift_combobox.grid(row=4, column=1, columnspan=2, padx=10, pady=5)
 
     # Submit button
