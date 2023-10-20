@@ -1,10 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+from tkcalendar import Calendar
 from tkcalendar import DateEntry  # Requires 'tkcalendar' package to be installed
 from datetime import datetime
 import gspread
 from google.oauth2 import service_account
+
+labels = ["name", "date_started", "date_stopped", "usual_shift_day", "usual_shift_time", "tourist"]
 
 def openSelectedSheet(sheetName):
     # Define your credentials file path
@@ -413,6 +416,104 @@ def add_medicine():
     # Adjust row and column weights to make the input fields expandable
     input_frame.columnconfigure((1, 2), weight=1)
 
+def show_info(cal):
+    selected_date = cal.get_date()
+    info = get_data_for_date(selected_date)
+    
+    if info:
+        display_info(selected_date, info)
+    else:
+        display_info(selected_date, "No data found for this date.")
+
+def get_data_for_date(selected_date):
+    # Authenticate with Google Sheets API using your credentials
+    credentials_file = 'credentials.json'
+    scope = ['https://spreadsheets.google.com/feeds',
+             'https://www.googleapis.com/auth/drive']
+    credentials = service_account.Credentials.from_service_account_file(credentials_file, scopes=scope)
+    client = gspread.Client(auth=credentials)
+    
+    # Open the Google Sheet by its ID
+    sheet_id = "1sm_ePXHiTxty5gHfgW_rWGhzdnml1G6sVfuwKfKWeMM"
+    worksheet = client.open_by_key(sheet_id).worksheet("Volunteers")
+    
+    # Fetch all data from column B
+    column_b_data = worksheet.col_values(2)
+    
+    # Collect all rows with matching dates
+    matching_rows = []
+
+    for i, date in enumerate(column_b_data):
+        if date == selected_date:
+            row_with_date = worksheet.row_values(i + 1)  # Adjust for 0-based indexing
+            matching_rows.append(row_with_date)
+
+    formatted_data_list = []
+    
+    for row in matching_rows:
+        formatted_data = '\n'.join([f"{label}: {value}" for label, value in zip(labels, row)])
+        formatted_data_list.append(formatted_data)
+
+    # Join the formatted data with newlines to get a single string
+    formatted_data_string = '\n\n'.join(formatted_data_list)
+
+    return formatted_data_string
+
+def display_info(selected_date, info):
+    info_window = tk.Toplevel(root)
+    info_window.title("Information")
+    
+    info_text = tk.Text(info_window, wrap=tk.WORD)
+    info_text.pack(padx=10, pady=10)
+
+    info_text.insert(tk.END, f"Data for {selected_date}:\n\n{''.join(info)}")
+
+    # Set the color for the words in the labels
+    for label in labels:
+        start = info_text.search(label, "1.0", stop=tk.END)
+        end = f"{start}+{len(label)}c"
+        info_text.tag_add(label, start, end)
+        info_text.tag_config(label, foreground="blue")  # Change the color here
+
+def show_calendar():
+    root = tk.Tk()
+    root.title("Calendar")
+
+    # Create a Calendar widget
+    cal = Calendar(root, date_pattern="dd/mm/y")
+    cal.pack(padx=10, pady=10)
+
+    # Button to show information for the selected date
+    show_info_button = tk.Button(root, text="Show Info", command=lambda: show_info(cal))
+    show_info_button.pack(pady=10)
+
+def inventory():
+    global view_inventory, add_inventory_item, edit_inventory, inventory_menu_window
+
+    # Create a new window for the inventory menu
+    inventory_menu_window = tk.Toplevel(root)
+    inventory_menu_window.title("Inventory Menu")
+
+    # Create a frame to hold the input fields
+    input_frame = ttk.Frame(inventory_menu_window, padding=20)
+    input_frame.grid(row=0, column=0, sticky="nsew")
+
+    # View inventory button
+    view_inventory_button = ttk.Button(input_frame, text="View Inventory", command=on_view_inventory_submit)
+    view_inventory_button.grid(row=1, column=0, columnspan=1, pady=10)
+
+
+    # Return button
+    return_button = ttk.Button(input_frame, text="Return", command=inventory_menu_window.destroy)
+    return_button.grid(row=3, column=0, pady=10)
+
+    # Adjust row and column weights to make the input fields expandable
+    input_frame.columnconfigure((0), weight=1)
+
+def on_view_inventory_submit():
+    ""
+
+
 def add_shift():
     global name_entry, shift_var, shift_date_entry, day_var, usual_shift_combobox, shift_window
 
@@ -488,7 +589,7 @@ root.title("Select what would you like to do")
 action_frame = ttk.Frame(root, padding=20)
 action_frame.grid(row=0, column=0, sticky="nsew")
 
-# Add a shift button
+# Add Shift button
 shift_button = ttk.Button(action_frame, text="Add a shift", command=add_shift)
 shift_button.grid(row=0, column=0, padx=10, pady=5)
 
@@ -511,6 +612,16 @@ dog_button.grid(row=1, column=1, padx=10, pady=5)
 # Add Medicine button
 medicine_button = ttk.Button(action_frame, text="Add Medicine", command=add_medicine)
 medicine_button.grid(row=1, column=2, padx=10, pady=5)
+
+# Add Inventory button
+medicine_button = ttk.Button(action_frame, text="Inventory", command=inventory)
+medicine_button.grid(row=2, column=0, padx=10, pady=5)
+
+# Add Calendar button
+shift_button = ttk.Button(action_frame, text="View Calendar", command=show_calendar)
+shift_button.grid(row=2, column=2, padx=10, pady=5)
+
+
 
 action_frame.columnconfigure((0, 1, 2), weight=1)
 
