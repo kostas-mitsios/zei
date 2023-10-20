@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkcalendar import Calendar
 from tkcalendar import DateEntry  # Requires 'tkcalendar' package to be installed
+from PIL import Image, ImageTk
 from datetime import datetime
 import gspread
 from google.oauth2 import service_account
@@ -185,6 +186,7 @@ def show_dog_input_box():
     # Create a new window for the dog input box
     dog_input_window = tk.Toplevel(root)
     dog_input_window.title("Add New Dog")
+    dog_input_window.iconbitmap("zeil_logo.ico")
 
     # Create a frame to hold the input fields
     input_frame = ttk.Frame(dog_input_window, padding=20)
@@ -253,6 +255,7 @@ def add_shift():
     shift_window = tk.Toplevel(root)
     shift_window.title("Add Shift Info")
     shift_window.geometry("400x250")
+    shift_window.iconbitmap("zeil_logo.ico")
 
     shift_frame = ttk.Frame(shift_window, padding=20)
     shift_frame.pack(fill=tk.BOTH, expand=True)
@@ -320,6 +323,7 @@ def add_volunteer():
     # Create a new window for the volunteer input box
     volunteer_input_window = tk.Toplevel(root)
     volunteer_input_window.title("Add Volunteer")
+    volunteer_input_window.iconbitmap("zeil_logo.ico")
 
     # Create a frame to hold the input fields
     input_frame = ttk.Frame(volunteer_input_window, padding=20)
@@ -392,6 +396,7 @@ def add_medicine():
     # Create a new window for the medicine input box
     medicine_input_window = tk.Toplevel(root)
     medicine_input_window.title("Add Medicine")
+    medicine_input_window.iconbitmap("zeil_logo.ico")
 
     # Create a frame to hold the input fields
     input_frame = ttk.Frame(medicine_input_window, padding=20)
@@ -462,6 +467,7 @@ def get_data_for_date(selected_date):
 def display_info(selected_date, info):
     info_window = tk.Toplevel(root)
     info_window.title("Information")
+    info_window.iconbitmap("zeil_logo.ico")
     
     info_text = tk.Text(info_window, wrap=tk.WORD)
     info_text.pack(padx=10, pady=10)
@@ -478,6 +484,7 @@ def display_info(selected_date, info):
 def show_calendar():
     root = tk.Tk()
     root.title("Calendar")
+    root.iconbitmap("zeil_logo.ico")
 
     # Create a Calendar widget
     cal = Calendar(root, date_pattern="dd/mm/y")
@@ -493,6 +500,7 @@ def inventory():
     # Create a new window for the inventory menu
     inventory_menu_window = tk.Toplevel(root)
     inventory_menu_window.title("Inventory Menu")
+    inventory_menu_window.iconbitmap("zeil_logo.ico")
 
     # Create a frame to hold the input fields
     input_frame = ttk.Frame(inventory_menu_window, padding=20)
@@ -513,6 +521,43 @@ def inventory():
 def on_view_inventory_submit():
     ""
 
+def donations():
+    global view_donations, add_donation, donations_menu_window
+
+    # Create a new window for the inventory menu
+    donations_menu_window = tk.Toplevel(root)
+    donations_menu_window.title("Donations Menu")
+    donations_menu_window.configure(bg='blue')
+    donations_menu_window.iconbitmap("zeil_logo.ico")
+
+    # Create a custom style for blue buttons
+    style = ttk.Style()
+    style.configure("Blue.TButton", foreground="black", background="red")
+
+    # Create a frame to hold the input fields
+    input_frame = ttk.Frame(donations_menu_window, padding=20)
+    input_frame.grid(row=0, column=0, sticky="nsew")
+
+    # View inventory button
+    view_donations_button = ttk.Button(input_frame, text="View Donations", command=on_view_donations, style="Blue.TButton")
+    view_donations_button.grid(row=1, column=0, columnspan=1, pady=10)
+
+    # View inventory button
+    add_donation_button = ttk.Button(input_frame, text="Add Donations", command=on_add_donations)
+    add_donation_button.grid(row=1, column=2, columnspan=1, pady=10)
+
+    # Return button
+    return_button = ttk.Button(input_frame, text="Return", command=donations_menu_window.destroy)
+    return_button.grid(row=2, column=1, pady=10)
+
+    # Adjust row and column weights to make the input fields expandable
+    input_frame.columnconfigure((1, 2), weight=1)
+
+def on_view_donations():
+    ""
+
+def on_add_donations():
+    ""
 
 def add_shift():
     global name_entry, shift_var, shift_date_entry, day_var, usual_shift_combobox, shift_window
@@ -521,6 +566,7 @@ def add_shift():
     shift_window = tk.Toplevel(root)
     shift_window.title("Add Shift Info")
     shift_window.geometry("400x250")
+    shift_window.iconbitmap("zeil_logo.ico")
 
     shift_frame = ttk.Frame(shift_window, padding=20)
     shift_frame.pack(fill=tk.BOTH, expand=True)
@@ -582,46 +628,83 @@ def add_shift():
     # Adjust row and column weights to make the input fields expandable
     shift_frame.columnconfigure((1, 2), weight=1)
 
+
+def resize_image(event):
+    # Resize the image to match the size of the frame
+    new_width = event.width
+    new_height = event.height
+    image = original_image.resize((new_width, new_height))
+    photo = ImageTk.PhotoImage(image)
+    label.configure(image=photo)
+    label.image = photo  # Keep a reference
+
 # Create the main window
 root = tk.Tk()
 root.title("Select what would you like to do")
+#root.configure(bg="blue")
 
-action_frame = ttk.Frame(root, padding=20)
+# Load an image
+#original_image = Image.open("zeil_logo.png")  # Replace "your_image.png" with your image file
+
+# Set the theme
+ttk.Style().theme_use('winnative')
+
+# Create a style and configure the background color
+style = ttk.Style()
+style.configure('My.TFrame', background='green')  # Change 'blue' to your desired color
+# Create a custom style for the red button
+style = ttk.Style()
+style.configure('Red.TButton', background='red', foreground='black')  # Set background to red and text color to white
+
+
+root.iconbitmap("zeil_logo.ico")
+
+action_frame = ttk.Frame(root, padding=20, style='My.TFrame')
 action_frame.grid(row=0, column=0, sticky="nsew")
 
+# Bind the frame to the resize_image function to handle window resizing
+#action_frame.bind("<Configure>", resize_image)
+
+# Create a label for the background image
+#photo = ImageTk.PhotoImage(original_image)
+#label = ttk.Label(action_frame, image=photo)
+#label.place(relwidth=1, relheight=1)  # Stretch the label to fill the frame
+
 # Add Shift button
-shift_button = ttk.Button(action_frame, text="Add a shift", command=add_shift)
+shift_button = ttk.Button(action_frame, text="Add a shift", command=add_shift, style = 'Red.TButton')
 shift_button.grid(row=0, column=0, padx=10, pady=5)
 
 # Add Volunteer button
-volunteer_button = ttk.Button(action_frame, text="Add Volunteer", command=add_volunteer)
+volunteer_button = ttk.Button(action_frame, text="Add Volunteer", command=add_volunteer, style = 'Red.TButton')
 volunteer_button.grid(row=0, column=1, padx=10, pady=5)
 
 # Add Volunteer Update button
-volunteer_update_button = ttk.Button(action_frame, text="Add Volunteer Update", command=lambda: print("Add Volunteer Update button clicked"))
+volunteer_update_button = ttk.Button(action_frame, text="Add Volunteer Update", command=lambda: print("Add Volunteer Update button clicked"), style = 'Red.TButton')
 volunteer_update_button.grid(row=0, column=2, padx=10, pady=5)
 
 # Add Dog Update button
-dog_update_button = ttk.Button(action_frame, text="Add Dog Update", command=lambda: print("Add Dog Update button clicked"))
+dog_update_button = ttk.Button(action_frame, text="Add Dog Update", command=lambda: print("Add Dog Update button clicked"), style = 'Red.TButton')
 dog_update_button.grid(row=1, column=0, padx=10, pady=5)
 
 # Add Dog button
-dog_button = ttk.Button(action_frame, text="Add New Dog", command=show_dog_input_box)
+dog_button = ttk.Button(action_frame, text="Add New Dog", command=show_dog_input_box, style = 'Red.TButton')
 dog_button.grid(row=1, column=1, padx=10, pady=5)
 
 # Add Medicine button
-medicine_button = ttk.Button(action_frame, text="Add Medicine", command=add_medicine)
+medicine_button = ttk.Button(action_frame, text="Add Medicine", command=add_medicine, style = 'Red.TButton')
 medicine_button.grid(row=1, column=2, padx=10, pady=5)
 
 # Add Inventory button
-medicine_button = ttk.Button(action_frame, text="Inventory", command=inventory)
+medicine_button = ttk.Button(action_frame, text="Inventory", command=inventory, style = 'Red.TButton')
 medicine_button.grid(row=2, column=0, padx=10, pady=5)
 
+# Add Donations button
+medicine_button = ttk.Button(action_frame, text="Donations", command=donations, style = 'Red.TButton')
+medicine_button.grid(row=2, column=1, padx=10, pady=5)
+
 # Add Calendar button
-shift_button = ttk.Button(action_frame, text="View Calendar", command=show_calendar)
+shift_button = ttk.Button(action_frame, text="View Calendar", command=show_calendar, style = 'Red.TButton')
 shift_button.grid(row=2, column=2, padx=10, pady=5)
-
-
 
 action_frame.columnconfigure((0, 1, 2), weight=1)
 
