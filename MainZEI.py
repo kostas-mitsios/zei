@@ -6,6 +6,7 @@ from tkcalendar import DateEntry  # Requires 'tkcalendar' package to be installe
 from PIL import Image, ImageTk
 from datetime import datetime
 import gspread
+from gspread.exceptions import APIError
 from google.oauth2 import service_account
 
 labels = ["name", "date_started", "date_stopped", "usual_shift_day", "usual_shift_time", "tourist"]
@@ -522,9 +523,9 @@ def on_view_inventory_submit():
     ""
 
 def donations():
-    global view_donations, add_donation, donations_menu_window
+    global donations_menu_window
 
-    # Create a new window for the inventory menu
+    # Create a new window for the donations menu
     donations_menu_window = tk.Toplevel(root)
     donations_menu_window.title("Donations Menu")
     donations_menu_window.configure(bg='blue')
@@ -554,10 +555,90 @@ def donations():
     input_frame.columnconfigure((1, 2), weight=1)
 
 def on_view_donations():
-    ""
+
+    # Create a new window for the donations menu
+    donations_view_window = tk.Toplevel(root)
+    donations_view_window.title("All Donations")
+    donations_view_window.configure(bg='green')
+    donations_view_window.iconbitmap("zeil_logo.ico")
+
 
 def on_add_donations():
-    ""
+    global donor_name, donation_date, donation_items
+
+    # Create a new window for the add donation menu
+    donation_add_window = tk.Toplevel(root)
+    donation_add_window.title("Add Donation")
+    donation_add_window.configure(bg='green')
+    donation_add_window.iconbitmap("zeil_logo.ico")
+
+    # Create a frame to hold the input fields
+    input_frame = ttk.Frame(donation_add_window, padding=20)
+    input_frame.grid(row=0, column=0, sticky="nsew")
+
+    # Labels
+    donor_label = ttk.Label(input_frame, text="Donor:")
+    donor_label.grid(row=0, column=0, sticky="w")
+
+    donation_date_label = ttk.Label(input_frame, text="Date:")
+    donation_date_label.grid(row=1, column=0, sticky="w")
+
+    donation_items_label = ttk.Label(input_frame, text="Items")
+    donation_items_label.grid(row=2, column=0, sticky="w")
+    
+    donor_name = ttk.Entry(input_frame, width=30)
+    donor_name.grid(row=0, column=1, padx=10, pady=5)
+
+    donation_date = DateEntry(input_frame, width=12, background='darkblue', foreground='white',
+                                   borderwidth=2, year=2023, date_pattern='dd/mm/yyyy')
+    donation_date.grid(row=1, column=1, padx=10, pady=5)
+
+    donation_items = ttk.Entry(input_frame, width=30)
+    donation_items.grid(row=2, column=1, padx=10, pady=5)
+
+    # Submit donation button
+    submit_donation_button = ttk.Button(input_frame, text="Submit", command=on_add_donations_submit)
+    submit_donation_button.grid(row=4, column=0, columnspan=1, pady=10)
+
+    # Return button
+    return_button = ttk.Button(input_frame, text="Return", command=donation_add_window.destroy)
+    return_button.grid(row=4, column=2, pady=10)
+    
+    # Adjust row and column weights to make the input fields expandable
+    input_frame.columnconfigure((0, 1, 2), weight=1)
+    
+def on_add_donations_submit():
+
+    donor = donor_name.get()
+    date = donation_date.get()
+    items = donation_items.get()
+
+    data_to_write = [
+    [donor, date, items]
+    ]
+
+    # Define your credentials file path
+    credentials_file = 'credentials.json'
+
+    # Authenticate with Google Sheets API
+    scope = ["https://www.googleapis.com/auth/spreadsheets"]
+    credentials = service_account.Credentials.from_service_account_file(credentials_file, scopes=scope)
+    client = gspread.Client(auth=credentials)
+
+    # Open the Google Sheet by its ID
+    sheet_id = "1sm_ePXHiTxty5gHfgW_rWGhzdnml1G6sVfuwKfKWeMM"
+
+    try:
+        sheet = client.open_by_key(sheet_id)
+    except APIError as e:
+        print("API Error:", e)
+    except Exception as e:
+        print("An error occurred:", e)
+
+    # Select the "Medications" sheet by its title
+    worksheet = sheet.worksheet("Donations")
+    next_empty_row = len(worksheet.col_values(1)) + 1
+    worksheet.insert_rows(data_to_write, next_empty_row)  # You can specify the row number where data should be inserted
 
 def add_shift():
     global name_entry, shift_var, shift_date_entry, day_var, usual_shift_combobox, shift_window
