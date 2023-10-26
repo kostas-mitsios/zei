@@ -154,10 +154,10 @@ def on_medicine_submit():
     worksheet.insert_rows(data_to_write, next_empty_row)  # You can specify the row number where data should be inserted
 
 def on_dog_submit():
-    global dog_name_entry, arrival_date_entry, currently_fostered_var, times_fostered_entry
+    global name_entry, arrival_date_entry, currently_fostered_var, times_fostered_entry
 
-    if dog_name_entry is not None and arrival_date_entry is not None and currently_fostered_var is not None:
-        name = dog_name_entry.get()
+    if name_entry is not None and arrival_date_entry is not None and currently_fostered_var is not None:
+        name = name_entry.get()
         arrival_date = arrival_date_entry.get()
         currently_fostered = currently_fostered_var.get()
         times_fostered = times_fostered_entry.get() if currently_fostered == "Yes" else ""
@@ -167,10 +167,29 @@ def on_dog_submit():
         messagebox.showinfo("Dog Data Entered", f"Name: {name}\nDate of Arrival: {arrival_date}\nCurrently Fostered: {currently_fostered}\nTimes Fostered: {times_fostered}")
 
         # Close the dog input window
-        dog_input_window.destroy()
+        input_window.destroy()
 
     else:
         print("Dog input fields are not initialized.")
+
+def on_cat_submit():
+    global name_entry, arrival_date_entry, currently_fostered_var, times_fostered_entry
+
+    if name_entry is not None and arrival_date_entry is not None and currently_fostered_var is not None:
+        name = name_entry.get()
+        arrival_date = arrival_date_entry.get()
+        currently_fostered = currently_fostered_var.get()
+        times_fostered = times_fostered_entry.get() if currently_fostered == "Yes" else ""
+
+        # Perform any validation or data processing here
+        # For simplicity, we will just display the entered data
+        messagebox.showinfo("Dog Data Entered", f"Name: {name}\nDate of Arrival: {arrival_date}\nCurrently Fostered: {currently_fostered}\nTimes Fostered: {times_fostered}")
+
+        # Close the dog input window
+        input_window.destroy()
+
+    else:
+        print("Cat input fields are not initialized.")
 #tbd
 def on_currently_fostered_change():
     global currently_fostered_var, times_fostered_entry
@@ -184,16 +203,16 @@ def on_currently_fostered_change():
         times_fostered_entry.config(state="readonly")
 
 def show_dog_input_box():
-    global dog_name_entry, arrival_date_entry, currently_fostered_var, times_fostered_entry, dog_input_window
+    global name_entry, arrival_date_entry, currently_fostered_var, times_fostered_entry, input_window
     global years_spinbox, months_spinbox
 
     # Create a new window for the dog input box
-    dog_input_window = tk.Toplevel(root)
-    dog_input_window.title("Add New Dog")
-    dog_input_window.iconbitmap("zeil_logo.ico")
+    input_window = tk.Toplevel(root)
+    input_window.title("Add New Dog")
+    input_window.iconbitmap("zeil_logo.ico")
 
     # Create a frame to hold the input fields
-    input_frame = ttk.Frame(dog_input_window, padding=20)
+    input_frame = ttk.Frame(input_window, padding=20)
     input_frame.grid(row=0, column=0, sticky="nsew")
 
     # Labels
@@ -201,8 +220,8 @@ def show_dog_input_box():
     name_label.grid(row=0, column=0, sticky="w")
 
     # Entry field for Dog Name
-    dog_name_entry = ttk.Entry(input_frame, width=30)
-    dog_name_entry.grid(row=0, column=1, padx=10, pady=5)
+    name_entry = ttk.Entry(input_frame, width=30)
+    name_entry.grid(row=0, column=1, padx=10, pady=5)
 
     # Date of Arrival Entry using 'tkcalendar'
     arrival_date_label = ttk.Label(input_frame, text="Date of Arrival:")
@@ -233,7 +252,6 @@ def show_dog_input_box():
     months_spinbox.grid(row=4, column=1, padx=10, pady=5)
 
     # Times Fostered Entry
-    global times_fostered_entry
     times_fostered_label = ttk.Label(input_frame, text="Times Fostered:")
     times_fostered_label.grid(row=5, column=0, sticky="w")
     times_fostered_entry = ttk.Entry(input_frame, width=5, state="readonly")
@@ -244,7 +262,7 @@ def show_dog_input_box():
     submit_button.grid(row=6, column=0, columnspan=2, pady=10)
 
     # Return button
-    return_button = ttk.Button(input_frame, text="Return", command=dog_input_window.destroy)
+    return_button = ttk.Button(input_frame, text="Return", command=input_window.destroy)
     return_button.grid(row=6, column=2, pady=10)
 
     # Adjust row and column weights to make the input fields expandable
@@ -260,16 +278,16 @@ def on_cat_update_submit():
 
 #tbd
 def show_cat_input_box():
-    global cat_name_entry, cat_arrival_date_entry, cat_currently_fostered_var, cat_times_fostered_entry, cat_input_window
-    global cat_years_spinbox, cat_months_spinbox
+    global name_entry, arrival_date_entry, currently_fostered_var, times_fostered_entry, input_window
+    global years_spinbox, months_spinbox
 
     # Create a new window for the dog input box
-    cat_input_window = tk.Toplevel(root)
-    cat_input_window.title("Add New Cat")
-    cat_input_window.iconbitmap("zeil_logo.ico")
+    input_window = tk.Toplevel(root)
+    input_window.title("Add New Cat")
+    input_window.iconbitmap("zeil_logo.ico")
 
     # Create a frame to hold the input fields
-    input_frame = ttk.Frame(cat_input_window, padding=20)
+    input_frame = ttk.Frame(input_window, padding=20)
     input_frame.grid(row=0, column=0, sticky="nsew")
 
     # Labels
@@ -277,55 +295,57 @@ def show_cat_input_box():
     name_label.grid(row=0, column=0, sticky="w")
 
     # Entry field for Dog Name
-    cat_name_entry = ttk.Entry(input_frame, width=30)
-    cat_name_entry.grid(row=0, column=1, padx=10, pady=5)
+    name_entry = ttk.Entry(input_frame, width=30)
+    name_entry.grid(row=0, column=1, padx=10, pady=5)
 
     # Date of Arrival Entry using 'tkcalendar'
-    cat_arrival_date_entry_label = ttk.Label(input_frame, text="Date of Arrival:")
-    cat_arrival_date_entry_label.grid(row=1, column=0, sticky="w")
-    cat_arrival_date_entry_label = DateEntry(input_frame, width=12, background='darkblue', foreground='white',
+    arrival_date_entry_label = ttk.Label(input_frame, text="Date of Arrival:")
+    arrival_date_entry_label.grid(row=1, column=0, sticky="w")
+    arrival_date_entry = DateEntry(input_frame, width=12, background='darkblue', foreground='white',
                                    borderwidth=2, year=2023, date_pattern='dd/mm/yyyy')
-    cat_arrival_date_entry_label.grid(row=1, column=1, padx=10, pady=5)
+    arrival_date_entry_label.grid(row=1, column=1, padx=10, pady=5)
 
     # Currently Fostered Radioboxes
-    cat_currently_fostered_var = tk.StringVar()
-    cat_currently_fostered_var.set("No")  # Set default selection to "No"
-    cat_currently_fostered_var_label = ttk.Label(input_frame, text="Currently Fostered:")
-    cat_currently_fostered_var_label.grid(row=2, column=0, sticky="w")
+    currently_fostered_var = tk.StringVar()
+    currently_fostered_var.set("No")  # Set default selection to "No"
+    currently_fostered_var_label = ttk.Label(input_frame, text="Currently Fostered:")
+    currently_fostered_var_label.grid(row=2, column=0, sticky="w")
     #tdb maybe command to change to cat specific. Same to dog
-    cat_fostered_yes_radio = ttk.Radiobutton(input_frame, text="Yes", variable=cat_currently_fostered_var, value="Yes", command=on_currently_fostered_change)
-    cat_fostered_yes_radio.grid(row=2, column=1, padx=5)
+    fostered_yes_radio = ttk.Radiobutton(input_frame, text="Yes", variable=currently_fostered_var, value="Yes", command=on_currently_fostered_change)
+    fostered_yes_radio.grid(row=2, column=1, padx=5)
     #tdb maybe command to change to cat specific. Same to dog
-    cat_fostered_no_radio = ttk.Radiobutton(input_frame, text="No", variable=cat_currently_fostered_var, value="No", command=on_currently_fostered_change)
-    cat_fostered_no_radio.grid(row=2, column=2, padx=5)
+    fostered_no_radio = ttk.Radiobutton(input_frame, text="No", variable=currently_fostered_var, value="No", command=on_currently_fostered_change)
+    fostered_no_radio.grid(row=2, column=2, padx=5)
 
     # Years and Months Spinboxes
-    cat_years_label = ttk.Label(input_frame, text="Years:")
-    cat_years_label.grid(row=3, column=0, sticky="w")
-    cat_years_spinbox = ttk.Spinbox(input_frame, from_=0, to=20)
-    cat_years_spinbox.grid(row=3, column=1, padx=10, pady=5)
+    years_label = ttk.Label(input_frame, text="Years:")
+    years_label.grid(row=3, column=0, sticky="w")
+    years_spinbox = ttk.Spinbox(input_frame, from_=0, to=20)
+    years_spinbox.grid(row=3, column=1, padx=10, pady=5)
 
-    cat_months_label = ttk.Label(input_frame, text="Months:")
-    cat_months_label.grid(row=4, column=0, sticky="w")
-    cat_months_spinbox = ttk.Spinbox(input_frame, from_=0, to=12)
-    cat_months_spinbox.grid(row=4, column=1, padx=10, pady=5)
+    months_label = ttk.Label(input_frame, text="Months:")
+    months_label.grid(row=4, column=0, sticky="w")
+    months_spinbox = ttk.Spinbox(input_frame, from_=0, to=12)
+    months_spinbox.grid(row=4, column=1, padx=10, pady=5)
 
     # Times Fostered Entry
-    cat_times_fostered_label = ttk.Label(input_frame, text="Times Fostered:")
-    cat_times_fostered_label.grid(row=5, column=0, sticky="w")
-    cat_times_fostered_entry = ttk.Entry(input_frame, width=5, state="readonly")
-    cat_times_fostered_entry.grid(row=5, column=1, padx=10, pady=5)
+    times_fostered_label = ttk.Label(input_frame, text="Times Fostered:")
+    times_fostered_label.grid(row=5, column=0, sticky="w")
+    times_fostered_entry = ttk.Entry(input_frame, width=5, state="readonly")
+    times_fostered_entry.grid(row=5, column=1, padx=10, pady=5)
 
     # Submit button
-    submit_button = ttk.Button(input_frame, text="Submit", command=on_dog_submit)
+    submit_button = ttk.Button(input_frame, text="Submit", command=on_cat_submit)
     submit_button.grid(row=6, column=0, columnspan=2, pady=10)
 
     # Return button
-    return_button = ttk.Button(input_frame, text="Return", command=cat_input_window.destroy)
+    return_button = ttk.Button(input_frame, text="Return", command=input_window.destroy)
     return_button.grid(row=6, column=2, pady=10)
 
     # Adjust row and column weights to make the input fields expandable
     input_frame.columnconfigure((1, 2), weight=1)
+
+
 
 def add_shift():
     global name_entry, shift_var, shift_date_entry, day_var, usual_shift_combobox, shift_window
@@ -807,6 +827,9 @@ def add_vet_visit():
 def add_incident():
     ""
 
+def report_menu():
+    ""
+
 """
 def resize_image(event):
     # Resize the image to match the size of the frame
@@ -821,6 +844,8 @@ def resize_image(event):
 # Create the main window
 root = tk.Tk()
 root.title("Select what would you like to do")
+#Not resizable main window
+root.resizable(False, False)
 #root.configure(bg="blue")
 
 # Load an image
@@ -906,10 +931,15 @@ shift_button.grid(row=3, column=1, padx=10, pady=5)
 shift_button = ttk.Button(action_frame, text="Add Incident", command=add_incident, style = 'Red.TButton')
 shift_button.grid(row=3, column=2, padx=10, pady=5)
 
+# Add Report Menu Button
+report_menu_button = ttk.Button(action_frame, text="Report Menu", command=report_menu, style = 'Red.TButton', width=35)
+report_menu_button.grid(row=4, column=0, columnspan=2, padx=10, pady=5)
+
 action_frame.columnconfigure((0, 1, 2, 3), weight=1)
 
 # Create variables for shift input
 name_entry = None
+arrival_date_entry = None
 shift_var = None
 shift_date_entry = None
 day_var = tk.StringVar()
