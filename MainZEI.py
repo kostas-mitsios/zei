@@ -171,7 +171,7 @@ def on_dog_submit():
 
     else:
         print("Dog input fields are not initialized.")
-
+#tbd
 def on_currently_fostered_change():
     global currently_fostered_var, times_fostered_entry
 
@@ -212,7 +212,6 @@ def show_dog_input_box():
     arrival_date_entry.grid(row=1, column=1, padx=10, pady=5)
 
     # Currently Fostered Radioboxes
-    global currently_fostered_var
     currently_fostered_var = tk.StringVar()
     currently_fostered_var.set("No")  # Set default selection to "No"
     currently_fostered_label = ttk.Label(input_frame, text="Currently Fostered:")
@@ -261,7 +260,72 @@ def on_cat_update_submit():
 
 #tbd
 def show_cat_input_box():
-    ""
+    global cat_name_entry, cat_arrival_date_entry, cat_currently_fostered_var, cat_times_fostered_entry, cat_input_window
+    global cat_years_spinbox, cat_months_spinbox
+
+    # Create a new window for the dog input box
+    cat_input_window = tk.Toplevel(root)
+    cat_input_window.title("Add New Cat")
+    cat_input_window.iconbitmap("zeil_logo.ico")
+
+    # Create a frame to hold the input fields
+    input_frame = ttk.Frame(cat_input_window, padding=20)
+    input_frame.grid(row=0, column=0, sticky="nsew")
+
+    # Labels
+    name_label = ttk.Label(input_frame, text="Name:")
+    name_label.grid(row=0, column=0, sticky="w")
+
+    # Entry field for Dog Name
+    cat_name_entry = ttk.Entry(input_frame, width=30)
+    cat_name_entry.grid(row=0, column=1, padx=10, pady=5)
+
+    # Date of Arrival Entry using 'tkcalendar'
+    cat_arrival_date_entry_label = ttk.Label(input_frame, text="Date of Arrival:")
+    cat_arrival_date_entry_label.grid(row=1, column=0, sticky="w")
+    cat_arrival_date_entry_label = DateEntry(input_frame, width=12, background='darkblue', foreground='white',
+                                   borderwidth=2, year=2023, date_pattern='dd/mm/yyyy')
+    cat_arrival_date_entry_label.grid(row=1, column=1, padx=10, pady=5)
+
+    # Currently Fostered Radioboxes
+    cat_currently_fostered_var = tk.StringVar()
+    cat_currently_fostered_var.set("No")  # Set default selection to "No"
+    cat_currently_fostered_var_label = ttk.Label(input_frame, text="Currently Fostered:")
+    cat_currently_fostered_var_label.grid(row=2, column=0, sticky="w")
+    #tdb maybe command to change to cat specific. Same to dog
+    cat_fostered_yes_radio = ttk.Radiobutton(input_frame, text="Yes", variable=cat_currently_fostered_var, value="Yes", command=on_currently_fostered_change)
+    cat_fostered_yes_radio.grid(row=2, column=1, padx=5)
+    #tdb maybe command to change to cat specific. Same to dog
+    cat_fostered_no_radio = ttk.Radiobutton(input_frame, text="No", variable=cat_currently_fostered_var, value="No", command=on_currently_fostered_change)
+    cat_fostered_no_radio.grid(row=2, column=2, padx=5)
+
+    # Years and Months Spinboxes
+    cat_years_label = ttk.Label(input_frame, text="Years:")
+    cat_years_label.grid(row=3, column=0, sticky="w")
+    cat_years_spinbox = ttk.Spinbox(input_frame, from_=0, to=20)
+    cat_years_spinbox.grid(row=3, column=1, padx=10, pady=5)
+
+    cat_months_label = ttk.Label(input_frame, text="Months:")
+    cat_months_label.grid(row=4, column=0, sticky="w")
+    cat_months_spinbox = ttk.Spinbox(input_frame, from_=0, to=12)
+    cat_months_spinbox.grid(row=4, column=1, padx=10, pady=5)
+
+    # Times Fostered Entry
+    cat_times_fostered_label = ttk.Label(input_frame, text="Times Fostered:")
+    cat_times_fostered_label.grid(row=5, column=0, sticky="w")
+    cat_times_fostered_entry = ttk.Entry(input_frame, width=5, state="readonly")
+    cat_times_fostered_entry.grid(row=5, column=1, padx=10, pady=5)
+
+    # Submit button
+    submit_button = ttk.Button(input_frame, text="Submit", command=on_dog_submit)
+    submit_button.grid(row=6, column=0, columnspan=2, pady=10)
+
+    # Return button
+    return_button = ttk.Button(input_frame, text="Return", command=cat_input_window.destroy)
+    return_button.grid(row=6, column=2, pady=10)
+
+    # Adjust row and column weights to make the input fields expandable
+    input_frame.columnconfigure((1, 2), weight=1)
 
 def add_shift():
     global name_entry, shift_var, shift_date_entry, day_var, usual_shift_combobox, shift_window
