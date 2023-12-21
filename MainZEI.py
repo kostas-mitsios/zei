@@ -4,13 +4,14 @@ from tkinter import messagebox
 from tkcalendar import DateEntry  # Requires 'tkcalendar' package to be installed
 from datetime import datetime
 
+#used mainly in shift feedback
 def calculate_day(event=None):
     selected_date = shift_date_entry.get_date()
     if selected_date:
         selected_day = selected_date.strftime('%A')
         day_var.set(selected_day)
 
-def on_shift_submit():
+def on_shift_feedback_submit():
     global name_entry, shift_var, shift_date_entry, day_var, usual_shift_combobox
 
     name = name_entry.get()
@@ -36,7 +37,7 @@ def on_volunteer_submit():
     date_stopped = date_stopped_entry.get()
     shift_day = shift_day_combobox.get()
     shift_time = shift_time_var.get()
-    tourist = "Yes" if tourist_var.get() else ""
+    tourist = "Yes" if tourist_var.get() else "No"
 
     # Perform any validation or data processing here
     # For simplicity, we will just display the entered data
@@ -143,30 +144,31 @@ def show_dog_input_box():
     # Adjust row and column weights to make the input fields expandable
     input_frame.columnconfigure((1, 2), weight=1)
 
-def add_shift():
+def add_shift_feedback():
     global name_entry, shift_var, shift_date_entry, day_var, usual_shift_combobox, shift_window
 
     # Create a new window for the shift input box
     shift_window = tk.Toplevel(root)
-    shift_window.title("Add Shift Info")
+    shift_window.title("Add Shift Feedback")
     shift_window.geometry("400x250")
 
     shift_frame = ttk.Frame(shift_window, padding=20)
     shift_frame.pack(fill=tk.BOTH, expand=True)
 
     # Labels
-    name_label = ttk.Label(shift_frame, text="Name:")
+    name_label = ttk.Label(shift_frame, text="Volunteer submitting feedback:")
     name_label.grid(row=0, column=0, sticky="w")
 
     shift_label = ttk.Label(shift_frame, text="Shift:")
     shift_label.grid(row=1, column=0, sticky="w")
 
-    date_label = ttk.Label(shift_frame, text="Date:")
+    date_label = ttk.Label(shift_frame, text="Date of Shift:")
     date_label.grid(row=2, column=0, sticky="w")
 
     day_label = ttk.Label(shift_frame, text="Day:")
     day_label.grid(row=3, column=0, sticky="w")
 
+    #probably to remove this button #todo
     usual_shift_label = ttk.Label(shift_frame, text="Usual Shift:")
     usual_shift_label.grid(row=4, column=0, sticky="w")
 
@@ -183,12 +185,14 @@ def add_shift():
     afternoon_radio.grid(row=1, column=2, padx=5)
 
     # Date Entry using 'tkcalendar'
+    #calendar starts at current year
     shift_date_entry = DateEntry(shift_frame, width=12, background='darkblue', foreground='white',
                                  borderwidth=2, year=2023, date_pattern='dd/mm/yyyy')
     shift_date_entry.grid(row=2, column=1, columnspan=2, padx=10, pady=5)
 
     # Bind the DateEntrySelected event to the calculate_day function
     shift_date_entry.bind("<<DateEntrySelected>>", calculate_day)
+    #messagebox.showinfo("shift date: ", calculate_day)
 
     # Day Entry (Readonly)
     day_var = tk.StringVar()
@@ -201,7 +205,7 @@ def add_shift():
     usual_shift_combobox.grid(row=4, column=1, columnspan=2, padx=10, pady=5)
 
     # Submit button
-    submit_button = ttk.Button(shift_frame, text="Submit", command=on_shift_submit)
+    submit_button = ttk.Button(shift_frame, text="Submit", command=on_shift_feedback_submit)
     submit_button.grid(row=5, column=1, pady=10)
 
     # Return button
@@ -312,7 +316,7 @@ def add_medicine():
 
     # Adjust row and column weights to make the input fields expandable
     input_frame.columnconfigure((1, 2), weight=1)
-
+"""
 def add_shift():
     global name_entry, shift_var, shift_date_entry, day_var, usual_shift_combobox, shift_window
 
@@ -380,7 +384,7 @@ def add_shift():
 
     # Adjust row and column weights to make the input fields expandable
     shift_frame.columnconfigure((1, 2), weight=1)
-
+"""
 # Create the main window
 root = tk.Tk()
 root.title("Select what would you like to do")
@@ -389,7 +393,7 @@ action_frame = ttk.Frame(root, padding=20)
 action_frame.grid(row=0, column=0, sticky="nsew")
 
 # Add a shift button
-shift_button = ttk.Button(action_frame, text="Add a shift", command=add_shift)
+shift_button = ttk.Button(action_frame, text="Shift Feedback", command=add_shift_feedback)
 shift_button.grid(row=0, column=0, padx=10, pady=5)
 
 # Add Volunteer button

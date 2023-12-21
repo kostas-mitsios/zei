@@ -13,7 +13,7 @@ def button_click(button_name):
     #print(f"Button clicked: {button_name}")
 
 root = tk.Tk()
-root.title("Button Box")
+root.title("Refresh menu")
 
 # Create label frames for each group of buttons
 frame1 = tk.LabelFrame(root, text="IM Files")
